@@ -54,3 +54,90 @@
 
    Adding those type signatures alone, makes the function more
    readable, because now I can expect what it is going to do.
+
+* Use hlint on the code and heed warnings from ghc
+
+  Many warnings and suggestions are worthwile.  They can point out
+  possible mistakes or partial functions, but also show what an
+  idiomatic Haskell solution could be.  For instance:
+
+** Use =head= instead of =(!!0)=
+
+   =readfile (args !! 0)= is reminiscent of other languages, where the
+   command line arguments are in an array, which you'd need to index.
+   Using the 0^{th} index though, is normally done by using the =head=
+   function.  =readFile $ head args= is the suggested alternative.
+
+** =elem= is more readable as =`elem`=
+
+   Functions that take more than one argument, can be inserted between
+   the first and second argument (infix) if you write backquotes
+   around them.  For many functions, such as =elem=, =mod= and =div=,
+   this makes much sense.  So =if elem "inflate" args= can be
+   rewritten as =if "inflate" `elem` args=.
+
+** Redundant parentheses
+
+   In that same line, =(inflate)= and =(compress)= have parentheses
+   around them, but they are really not necessary.  Removing them
+   makes the line more readable (even for LISP programmers).
+
+   The same goes for =map (length) lines= in =preprocess=, =map
+   (shrinkcol) cols= in =compress= and =(map length) c= in =inflate=.
+   And even =string++(repeat ' ')= can do without the parentheses.
+
+** Shadowed bindings
+
+   Three functions use the name =lines= for a parameter, which happens
+   to be the name of a function, too.  It is best to heed this
+   warning, for two reasons:
+
+   1. If you happen to want to split some string later on in those
+      functions, you'll have to change the name anyway.
+   2. People who see =lines= somewhere, will probably think of the
+      function first, be confused, then remember that it is a
+      redefined value.
+
+   Using =ls= is not that bad, by the way, especially if you change
+   the type to be more documentational (see below).
+
+** Eta reduction
+
+   This mathematical term comes down to "remove the variable name", so
+   that the focus lies more on /what/ the function does, and less of
+   what it functions /on/.  The function =shrinkcol= has a =c= on both
+   ends, and they can both be removed, resulting in:
+
+#+BEGIN_SRC haskell
+  shrinkcol = map (\el -> reverse $ dropWhile (==' ') $ reverse $ dropWhile (==' ') el)
+#+END_SRC
+
+   Which expresses exactly the same, just in less "words".
+
+** Avoid lambda
+
+   This warning, on the same function as above, suggests about the
+   same thing, but now for the =\el= variable.  However, because we
+   use the =$= for application of values, this line should be
+   rewritten using =.= for composition.  As =f . g= means: do =f=
+   after =g=, this comes mostly down to just replacing the =$= with
+   =.=:
+
+#+BEGIN_SRC haskell
+  shrinkcol = map (reverse . dropWhile (==' ') . reverse . dropWhile (==' '))
+#+END_SRC
+
+** Another composition opportunity
+
+   The last warning that ghc and hlint give us, is to use composition
+   in the =mapM_= call.  Instead of saying: "map =putStrLn= over the
+   result of mapping =concat= over the list =erg=, and combine that
+   into one =IO= action", you can say "map (=putStrLn= after =concat=)
+   over the list =erg=, and combine that into one =IO= action".  Which
+   is shorter in English already :)
+
+#+BEGIN_SRC haskell
+  mapM_ (putStrLn . concat) erg
+#+END_SRC
+
+   And now we are warning-free!
