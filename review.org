@@ -23,3 +23,34 @@
    short names).  =add_del=, on the other hand, would be more readable
    as =addDelimiters=.  =delim= is a somewhat more conventional
    abbreviation.
+
+* Types
+
+** Use the type system
+
+   Yes, Haskell can find out what types your values and functions
+   have.  And it will be correct in many, many cases.  But if /you/
+   are wrong, Haskell cannot tell you, unless you tell the compiler
+   what you intend to do.  So always, always write the type signatures
+   of at least the top-level bindings.  That way, if your function is
+   not yet finished, or you make a mistake, the compiler will be able
+   to tell you almost exactly where.
+
+   So:
+
+#+BEGIN_SRC haskell
+  main :: IO ()
+
+  rpad :: Int -> String -> String
+
+  preprocess :: [String] -> [String]
+
+  dissect :: String -> [Int]
+
+  compress :: [String] -> [[String]]
+
+  inflate :: [String] -> [[String]]
+#+END_SRC
+
+   Adding those type signatures alone, makes the function more
+   readable, because now I can expect what it is going to do.
