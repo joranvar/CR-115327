@@ -1,0 +1,25 @@
+#+OPTIONS: toc:nil
+
+* Names
+
+** Follow the Haskell convention of names
+
+   The Haskell convention is camelCase.  That is, start names with a
+   lowercase letter, and join words together by capitalizing them.  So
+   =head_lens= would be =headLens=, or better yet, =headerLengths=.
+
+** Use names with meanings, not just labels
+
+   Come to think of it, an even better name would be =columnWidths=,
+   as that is not just what the value /is/, but what it /means/ (and
+   what it is /used for/).  =lp= and =erg= don't tell me a lot,
+   either.
+
+** Don't be afraid of longer names
+
+   It is also useful and nice for other readers *not* to use
+   abbreviations, unless the scope is very small.  So the =a= and =b=
+   in =dissect line= are good and clear (very short scope -> very
+   short names).  =add_del=, on the other hand, would be more readable
+   as =addDelimiters=.  =delim= is a somewhat more conventional
+   abbreviation.
