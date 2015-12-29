@@ -141,3 +141,32 @@
 #+END_SRC
 
    And now we are warning-free!
+
+* Types
+
+** Use the type system
+
+   What, again?  Yes.  But this time, use it to document the intent of
+   the functions, not just the functionality.  The easiest way to do
+   this, is to declare simple type aliases.  For instance,
+   =preprocess= works on lists of =String=, but each =String= is
+   actually a =Line=.  So adding =type Line = String=, while it does
+   not give any added compiler safety (=Line= is just an alias, and
+   exactly the same as =String=), it does give a bit of documentation.
+
+#+BEGIN_SRC haskell
+  type Line = String
+  type Cell = String
+
+  preprocess :: [Line] -> [Line]
+
+  compress :: [Line] -> [[Cell]]
+
+  inflate :: [Line] -> [[Cell]]
+#+END_SRC
+
+   Of course, making stronger types with constructors, using =data= is
+   even better, so that the type system helps you check whether the
+   code works, even before you run it.  Then, you can write functions
+   as transformations between types, instead of transformations
+   between "just =String=s".
