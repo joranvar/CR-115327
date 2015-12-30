@@ -13,12 +13,12 @@ main = do
   let erg = (if "inflate" `elem` args then inflate else compress) lp
   mapM_ (putStrLn . concat) erg
 
-rpad :: Int -> String -> String
-rpad len string = take len $ string ++ repeat ' '
+rpad :: a -> Int -> [a] -> [a]
+rpad a len as = take len $ as ++ repeat a
 
 --ensure last col has elements
 preprocess :: [Line] -> [Line]
-preprocess ls = map (rpad len) ls
+preprocess ls = map (rpad ' ' len) ls
   where len = maximum $ map length ls
 
 --calc lengths of the chunks(colname + spaces) for splitplaces
@@ -38,5 +38,5 @@ compress ls = add_del $ transpose $ map shrinkcol cols
 inflate :: [Line] -> [[Cell]]
 inflate ls = transpose $ map padcol table
   where table = transpose $ map (splitOn ";") ls --list of cols
-        padcol c = map (rpad m) c --pad whole col
+        padcol c = map (rpad ' ' m) c --pad whole col
           where m = (1+) $ maximum $ map length c --determine longest string in col, pad one more for prettiness
