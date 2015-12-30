@@ -9,17 +9,16 @@ main :: IO ()
 main = do
   args <- getArgs
   file <- readFile $ head args
-  let lp = preprocess (lines file)
+  let lp = rpadToMaxLen ' ' $ lines file --ensure last col has elements
   let erg = (if "inflate" `elem` args then inflate else compress) lp
   mapM_ (putStrLn . concat) erg
 
 rpad :: a -> Int -> [a] -> [a]
 rpad a len as = take len $ as ++ repeat a
 
---ensure last col has elements
-preprocess :: [Line] -> [Line]
-preprocess ls = map (rpad ' ' len) ls
-  where len = maximum $ map length ls
+rpadToMaxLen :: a -> [[a]] -> [[a]]
+rpadToMaxLen a as = map (rpad a len) as
+  where len = maximum $ map length as
 
 --calc lengths of the chunks(colname + spaces) for splitplaces
 dissect :: String -> [Int]
