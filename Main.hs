@@ -24,7 +24,11 @@ compress ls = map (concatMap ((++ ";") . trim) . splitPlacesBlanks splits) ls
         trim = reverse . dropWhile (==' ') . reverse . dropWhile (==' ')
 
 inflate :: [Line] -> [Line]
-inflate ls = map concat $ transpose $ map padcol table
-  where table = transpose $ map (splitOn ";") ls --list of cols
-        padcol c = map (rpad ' ' m) c --pad whole col
-          where m = (1+) $ maximum $ map length c --determine longest string in col, pad one more for prettiness
+inflate ls = 0
+  where widths = map maximum $ transpose $ map (dissect (==';')) ls
+
+-- inflate :: [Line] -> [Line]
+-- inflate ls = map concat $ transpose $ map padcol table
+--   where table = transpose $ map (splitOn ";") ls --list of cols
+--         padcol c = map (rpad ' ' m) c --pad whole col
+--           where m = (1+) $ maximum $ map length c --determine longest string in col, pad one more for prettiness
