@@ -14,16 +14,13 @@ main = do
 rpad :: a -> Int -> [a] -> [a]
 rpad a len as = take len $ as ++ repeat a
 
-rpadToMaxLen :: a -> [[a]] -> [[a]]
-rpadToMaxLen a as = map (rpad a len) as
-  where len = maximum $ map length as
-
 dissect :: (a -> Bool) -> [a] -> [Int]
-dissect f = map sum . chunksOf 2 . map length . split (condense $ whenElt f)
+dissect f = map sum . chunksOf 2 . map length . split (dropFinalBlank $ condense $ whenElt f)
 
 compress :: [Line] -> [Line]
-compress ls = map (concatMap ((++ ";") . trim) . splitPlaces widths) $ rpadToMaxLen ' ' ls
-  where widths = dissect (==' ') $ head $ rpadToMaxLen ' ' ls
+compress ls = map (concatMap ((++ ";") . trim) . splitPlacesBlanks splits) ls
+  where widths = dissect (==' ') $ head ls
+        splits = init widths ++ [maximum (map length ls) - sum (init widths)]
         trim = reverse . dropWhile (==' ') . reverse . dropWhile (==' ')
 
 inflate :: [Line] -> [Line]
