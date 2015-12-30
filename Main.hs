@@ -23,12 +23,9 @@ dissect :: (a -> Bool) -> [a] -> [Int]
 dissect f = map sum . chunksOf 2 . map length . split (condense $ whenElt f)
 
 compress :: [Line] -> [Line]
-compress ls = map concat $ add_del $ transpose $ map shrinkcol cols
-  where delim     = ';'
-        head_lens = dissect (==' ') (head ls) --calc lengths of the chunks(colname + spaces) for splitplaces
-        cols      = transpose $ map (splitPlaces head_lens) ls
-        shrinkcol = map (reverse . dropWhile (==' ') . reverse . dropWhile (==' '))
-        add_del   = map (map (++[delim]))
+compress ls = map (concatMap ((++ ";") . trim) . splitPlaces widths) ls
+  where widths = dissect (==' ') $ head ls
+        trim = reverse . dropWhile (==' ') . reverse . dropWhile (==' ')
 
 inflate :: [Line] -> [Line]
 inflate ls = map concat $ transpose $ map padcol table
