@@ -20,16 +20,13 @@ rpadToMaxLen :: a -> [[a]] -> [[a]]
 rpadToMaxLen a as = map (rpad a len) as
   where len = maximum $ map length as
 
---calc lengths of the chunks(colname + spaces) for splitplaces
-dissect :: String -> [Int]
-dissect line = zipWith (\a b->length (a++b)) names spaces
-  where names = wordsBy (==' ') line
-        spaces= wordsBy (/=' ') (line++" ") --add " " to ensure space after last col-name
+dissect :: (a -> Bool) -> [a] -> [Int]
+dissect f = map sum . chunksOf 2 . map length . split (condense $ whenElt f)
 
 compress :: [Line] -> [[Cell]]
 compress ls = add_del $ transpose $ map shrinkcol cols
   where delim     = ';'
-        head_lens = dissect (head ls)
+        head_lens = dissect (==' ') (head ls) --calc lengths of the chunks(colname + spaces) for splitplaces
         cols      = transpose $ map (splitPlaces head_lens) ls
         shrinkcol = map (reverse . dropWhile (==' ') . reverse . dropWhile (==' '))
         add_del   = map (map (++[delim]))
