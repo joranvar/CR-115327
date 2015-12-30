@@ -13,7 +13,9 @@
    Come to think of it, an even better name would be =columnWidths=,
    as that is not just what the value /is/, but what it /means/ (and
    what it is /used for/).  =lp= and =erg= don't tell me a lot,
-   either.
+   either.  For preprocess I would suggest a name like
+   rightPadLines. That way, I won't be so surprised to find out what
+   it does :)
 
 ** Don't be afraid of longer names
 
@@ -40,10 +42,13 @@
 
 #+BEGIN_SRC haskell
   main :: IO ()
+  main = do -- ..
 
   rpad :: Int -> String -> String
+  rpad len string = take -- ..
 
   preprocess :: [String] -> [String]
+  preprocess lines = map -- ..
 
   dissect :: String -> [Int]
 
@@ -82,8 +87,7 @@
    around them, but they are really not necessary.  Removing them
    makes the line more readable (even for LISP programmers).
 
-   The same goes for =map (length) lines= in =preprocess=, =map
-   (shrinkcol) cols= in =compress= and =(map length) c= in =inflate=.
+   The same goes for =map (length) lines= in =preprocess=, =map (shrinkcol) cols= in =compress= and =(map length) c= in =inflate=.
    And even =string++(repeat ' ')= can do without the parentheses.
 
 ** Shadowed bindings
