@@ -8,8 +8,7 @@ main :: IO ()
 main = do
   args <- getArgs
   file <- readFile $ head args
-  let lp = rpadToMaxLen ' ' $ lines file --ensure last col has elements
-  let erg = (if "inflate" `elem` args then inflate else compress) lp
+  let erg = (if "inflate" `elem` args then inflate else compress) $ lines file
   mapM_ putStrLn erg
 
 rpad :: a -> Int -> [a] -> [a]
@@ -23,8 +22,8 @@ dissect :: (a -> Bool) -> [a] -> [Int]
 dissect f = map sum . chunksOf 2 . map length . split (condense $ whenElt f)
 
 compress :: [Line] -> [Line]
-compress ls = map (concatMap ((++ ";") . trim) . splitPlaces widths) ls
-  where widths = dissect (==' ') $ head ls
+compress ls = map (concatMap ((++ ";") . trim) . splitPlaces widths) $ rpadToMaxLen ' ' ls
+  where widths = dissect (==' ') $ head $ rpadToMaxLen ' ' ls
         trim = reverse . dropWhile (==' ') . reverse . dropWhile (==' ')
 
 inflate :: [Line] -> [Line]
